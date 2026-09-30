@@ -1,72 +1,29 @@
 pipeline {
     agent any
 
-    // Optional: bind environment variables or credentials
     environment {
         CI = 'true'
-        // APP_ENV = 'test'
     }
 
-    // Optional: Automatically clean workspace or timeout after 30 mins
     options {
         timeout(time: 30, unit: 'MINUTES')
         disableConcurrentBuilds()
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                // Clones the repository configured in the Jenkins job
-                checkout scms
-            }
-        }
-
         stage('Build') {
             steps {
                 echo 'Running build phase...'
-                
-                // --- CHOOSE YOUR STACK ---
-                // Node.js:
-                // sh 'npm ci'
-                // sh 'npm run build'
-
-                // Python:
-                // sh 'python3 -m venv venv && . venv/bin/activate && pip install -r requirements.txt'
-
-                // Java / Maven:
-                // sh 'mvn clean compile -B'
-
-                // Java / Gradle:
-                // sh './gradlew assemble'
-
-                // Go:
-                // sh 'go build -v ./...'
-                
-                sh 'echo "Replace with your build commands"'
+                // Replace with your project build command (e.g., sh 'npm run build' or sh 'mvn compile')
+                sh 'echo "Building project..."'
             }
         }
 
         stage('Test') {
             steps {
                 echo 'Running test phase...'
-
-                // --- CHOOSE YOUR STACK ---
-                // Node.js:
-                // sh 'npm test -- --coverage'
-
-                // Python:
-                // sh '. venv/bin/activate && pytest --junitxml=reports/test-results.xml'
-
-                // Java / Maven:
-                // sh 'mvn test -B'
-
-                // Java / Gradle:
-                // sh './gradlew test'
-
-                // Go:
-                // sh 'go test -v ./...'
-
-                sh 'echo "Replace with your test commands"'
+                // Replace with your project test command (e.g., sh 'npm test' or sh 'mvn test')
+                sh 'echo "Testing project..."'
             }
         }
     }
@@ -74,10 +31,6 @@ pipeline {
     post {
         always {
             echo 'Pipeline completed.'
-            // Optional: Archive test reports (e.g., JUnit)
-            // junit allowEmptyResults: true, testResults: '**/target/surefire-reports/*.xml, **/reports/*.xml'
-            
-            // Clean workspace to free up agent disk space
             cleanWs()
         }
         success {
