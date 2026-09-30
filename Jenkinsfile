@@ -1,41 +1,87 @@
 pipeline {
     agent any
 
-    tools {
-        nodejs 'NodeJS-20' // This must match the name you set in Tools
-    }
-
-    environment {
-        CI = 'true'
-    }
-
     stages {
-        stage('Verify Environment') {
+
+        stage('Checkout') {
             steps {
-                sh 'node -v'
-                sh 'npm -v'
+                echo 'Checking out NutriFlow source code...'
+                checkout scm
             }
         }
-        stage('Install Dependencies') {
+
+        stage('Backend - Install') {
             steps {
-                sh 'npm ci || npm install'
+                echo 'Installing backend dependencies...'
+                dir('backend') {
+                    sh 'npm ci'
+                }
             }
         }
-        stage('Build') {
+
+        stage('Backend - Test') {
             steps {
-                sh 'npm run build --if-present'
+                echo 'Running backend tests...'
+                dir('backend') {
+                    sh 'npm test'
+                }
             }
         }
-        stage('Test') {
+
+        stage('Backend - Build') {
             steps {
-                sh 'npm test --if-present -- --watchAll=false'
+                echo 'Building backend...'
+                dir('backend') {
+                    sh 'npm run build --if-present'
+                }
+            }
+        }
+
+        stage('Frontend - Install') {
+            steps {
+                echo 'Installing frontend dependencies...'
+                dir('frontend') {
+                    sh 'npm ci'
+                }
+            }
+        }
+
+        stage('Frontend - Test') {
+            steps {
+                echo 'Running frontend tests...'
+                dir('frontend') {
+                    sh 'npm test'
+                }
+            }
+        }
+
+        stage('Frontend - Build') {
+            steps {
+                echo 'Building frontend...'
+                dir('frontend') {
+                    sh 'npm run build'
+                }
             }
         }
     }
 
     post {
+        success {
+            echo '======================================'
+            echo 'NutriFlow CI Pipeline Successful!'
+            echo 'Install, Test and Build completed.'
+            echo '======================================'
+        }
+
+        failure {
+            echo '======================================'
+            echo 'NutriFlow CI Pipeline Failed!'
+            echo 'Check the failed stage in Jenkins.'
+            echo '======================================'
+        }
+
         always {
-            cleanWs()
+            echo 'Jenkins pipeline execution completed.'
         }
     }
 }
